@@ -6,7 +6,6 @@
     <title>Login - Toko Stok App</title>
 
     <style>
-        /* ===== RESET ===== */
         * {
             margin: 0;
             padding: 0;
@@ -15,7 +14,7 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: radial-gradient(circle at top, #0f172a, #020617);
+            background: linear-gradient(135deg, #0f172a, #1e293b);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -23,129 +22,133 @@
             overflow: hidden;
         }
 
-        /* ===== BACKGROUND ORBS ===== */
-        .orb {
+        /* Glow Background */
+        .glow {
             position: absolute;
-            width: 350px;
-            height: 350px;
+            width: 420px;
+            height: 420px;
             border-radius: 50%;
-            background: rgba(0, 200, 255, 0.7);
-            filter: blur(120px);
-            animation: float 6s infinite ease-in-out alternate;
-        }
-        .orb2 {
-            background: rgba(0, 150, 255, 0.6);
-            left: 60%;
-            top: 60%;
-            animation-delay: 1.5s;
+            background: rgba(56, 189, 248, 0.3);
+            filter: blur(150px);
+            top: -80px;
+            left: -80px;
         }
 
-        @keyframes float {
-            from { transform: translateY(0px); }
-            to   { transform: translateY(-50px); }
+        .glow2 {
+            position: absolute;
+            width: 380px;
+            height: 380px;
+            border-radius: 50%;
+            background: rgba(14, 165, 233, 0.25);
+            filter: blur(130px);
+            bottom: -70px;
+            right: -70px;
         }
 
-        /* ===== GLASS CONTAINER ===== */
         .login-container {
             width: 100%;
             max-width: 380px;
-            padding: 40px;
+            padding: 35px;
             border-radius: 18px;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 25px rgba(0, 200, 255, 0.4);
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
             text-align: center;
             position: relative;
             z-index: 5;
         }
 
-        /* Logo Futuristik */
         .logo {
-            font-size: 48px;
+            font-size: 45px;
             font-weight: 700;
             color: #38bdf8;
-            letter-spacing: 2px;
-            text-shadow: 0 0 15px #38bdf8;
-            margin-bottom: 10px;
+            text-shadow: 0 0 10px #38bdf8;
+            margin-bottom: 6px;
         }
 
         .header h1 {
             color: #e2e8f0;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .header p {
             color: #94a3b8;
-            font-size: 15px;
-            font-weight: 500;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
 
-        /* Input futuristik */
-        input[type="text"],
+        input[type="email"],
         input[type="password"] {
             width: 100%;
-            padding: 14px;
-            margin-bottom: 15px;
-            border: none;
+            padding: 13px;
             border-radius: 10px;
-            background: rgba(255,255,255,0.1);
-            color: white;
+            margin-bottom: 14px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.08);
+            color: #e2e8f0;
             font-size: 15px;
             outline: none;
-            backdrop-filter: blur(4px);
             transition: 0.3s;
         }
 
         input:focus {
-            background: rgba(0, 200, 255, 0.15);
-            box-shadow: 0 0 12px #38bdf8;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+            border-color: #38bdf8;
         }
 
-        /* Tombol glowing */
-        button[type="submit"] {
+        button {
             width: 100%;
-            padding: 14px;
-            margin-top: 10px;
+            padding: 13px;
             background: linear-gradient(45deg, #0ea5e9, #38bdf8);
-            color: white;
             border: none;
             border-radius: 10px;
-            font-size: 17px;
-            font-weight: 600;
+            color: white;
+            font-size: 16px;
+            margin-top: 4px;
             cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 0 15px #0ea5e9;
+            font-weight: 600;
+            transition: 0.25s;
         }
 
         button:hover {
             transform: scale(1.03);
-            box-shadow: 0 0 25px #38bdf8;
+            box-shadow: 0 0 18px #38bdf8;
         }
 
-        /* Error Message */
         .error-message {
-            margin-top: 20px;
-            padding: 12px;
+            margin-top: 18px;
+            padding: 10px;
             background: rgba(255, 30, 30, 0.15);
             border: 1px solid rgba(255, 80, 80, 0.3);
             color: #ffb3b3;
             border-radius: 8px;
             font-weight: 500;
-            text-align: center;
-            backdrop-filter: blur(5px);
+        }
+
+        .register-link {
+            margin-top: 18px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #38bdf8;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            color: #0ea5e9;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Background Orbs -->
-    <div class="orb"></div>
-    <div class="orb orb2"></div>
+    <div class="glow"></div>
+    <div class="glow2"></div>
 
     <div class="login-container">
 
@@ -158,16 +161,19 @@
         <form action="/login" method="POST">
             @csrf
 
-            <input type="text" name="username" placeholder="Masukkan Username Anda" required>
-            <input type="password" name="password" placeholder="Masukkan Password Anda" required>
+            <input type="email" name="email" placeholder="Email Anda" required>
+            <input type="password" name="password" placeholder="Password Anda" required>
 
             <button type="submit">LOGIN</button>
 
             @if(session('error'))
-                <div class="error-message">
-                    {{ session('error') }}
-                </div>
+                <div class="error-message">{{ session('error') }}</div>
             @endif
+
+            <div class="register-link">
+                Belum punya akun?
+                <a href="{{ route('register') }}">Daftar sekarang</a>
+            </div>
         </form>
 
     </div>
