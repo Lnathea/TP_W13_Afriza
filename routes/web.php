@@ -1,71 +1,108 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 use App\Http\Controllers\ProductController;
-use App\Http\Middleware\AuthCheck;
 use App\Http\Controllers\TokoController;
 use App\Http\Controllers\StokController;
-use App\Models\Product; // Pastikan ini ada
-use App\Models\Toko;    // Pastikan ini ada
-use App\Models\Stok;    // Pastikan ini ada
+use App\Http\Middleware\AuthCheck;
+use App\Models\Product;
+use App\Models\Toko;
+use App\Models\Stok;
 
-// 🔹 Route LOGIN berada di luar AuthCheck
+/*
+|--------------------------------------------------------------------------
+| AUTH ROUTES (Login & Register)
+|--------------------------------------------------------------------------
+*/
+
+// ========== LOGIN ==========
 Route::get('/login', function () {
-    return view('login');   // pastikan kamu buat file login.blade.php
+    return view('login');
 })->name('login');
 
-Route::post('/login', function (\Illuminate\Http\Request $request) {
-    // Contoh login sederhana
-    if ($request->username === 'admin' && $request->password === '123') {
-        $request->session()->put('user_id', 1);
-        return redirect('/');
+// LOGIN PAKAI EMAIL
+Route::post('/login', function (Request $request) {
+
+    // Validasi
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    // Cari user berdasarkan email
+    $user = User::where('email', $request->email)->first();
+
+    if (!$user) {
+        return back()->with('error', 'Email tidak ditemukan');
     }
-    return back()->with('error', 'Login gagal');
+
+    // Cek password hash
+    if (!Hash::check($request->password, $user->password)) {
+        return back()->with('error', 'Password salah');
+    }
+
+    // Simpan sesi login
+    $request->session()->put('user_id', $user->id);
+
+    return redirect('/');
 });
 
-// 🔹 Logout
-// UBAH DARI Route::get MENJADI Route::post
-Route::post('/logout', function (\Illuminate\Http\Request $request) {
+// ========== REGISTER ==========
+Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])
+    ->name('register');
+
+Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
+
+
+// ========== LOGOUT ==========
+Route::post('/logout', function (Request $request) {
     $request->session()->forget('user_id');
     return redirect('/login');
 })->name('logout');
 
-// 🔹 Semua yang perlu login masuk ke middleware
+
+
+/*
+|--------------------------------------------------------------------------
+| PROTECTED ROUTES (Harus Login)
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware([AuthCheck::class])->group(function () {
 
-   Route::get('/', function () {
-        // 1. Ambil data statistik dari database
-        $totalProducts = Product::count(); 
+    // DASHBOARD
+    Route::get('/', function () {
+
+        $totalProducts = Product::count();
         $totalTokos = Toko::count();
-        
-        // Asumsi: Total stok adalah jumlah kolom 'jumlah' dari semua record Stok
-        $totalStokUnit = Stok::sum('jumlah'); 
-        
-        // Contoh logika stok rendah (misal, stok yang jumlahnya kurang dari 5)
+        $totalStokUnit = Stok::sum('jumlah');
         $stokRendah = Stok::where('jumlah', '<', 5)->count();
 
-        // 2. Kirim data ke view
-        return view('dashboard', compact('totalProducts', 'totalTokos', 'totalStokUnit', 'stokRendah'));
+        return view('dashboard', compact(
+            'totalProducts',
+            'totalTokos',
+            'totalStokUnit',
+            'stokRendah'
+        ));
     })->name('dashboard');
 
-    Route::get('/home', function () {
-        return view('home');
-    })->name('home');
+    // STATIC PAGES
+    Route::view('/home', 'home')->name('home');
+    Route::view('/about', 'about')->name('about');
+    Route::view('/contact', 'contact')->name('contact');
 
-    Route::get('/about', function () {
-        return view('about');
-    })->name('about');
-
-    Route::get('/contact', function () {
-        return view('contact');
-    })->name('contact');
-
+    // TOKO PAGE
     Route::get('/toko', function () {
         return view('toko');
     })->name('toko');
 
+    // STOK INDEX
     Route::get('/stok', [StokController::class, 'index'])->name('stok.index');
 
+    // RESOURCE ROUTES
     Route::resource('products', ProductController::class);
     Route::resource('toko', TokoController::class);
     Route::resource('stok', StokController::class);
